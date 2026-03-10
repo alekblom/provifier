@@ -18,9 +18,8 @@ class SuiAdapter {
   _initClient() {
     if (this._client) return;
     try {
-      const sui = require('@mysten/sui');
-      const { SuiClient, getFullnodeUrl } = sui.client || sui;
-      const { Transaction } = sui.transactions || sui;
+      const { SuiClient, getFullnodeUrl } = require('@mysten/sui/client');
+      const { Transaction } = require('@mysten/sui/transactions');
       this._Transaction = Transaction;
       this._client = new SuiClient({ url: getFullnodeUrl(this._network) });
     } catch (err) {
@@ -40,8 +39,7 @@ class SuiAdapter {
       return;
     }
     try {
-      const sui = require('@mysten/sui');
-      const { Ed25519Keypair } = sui.keypairs?.ed25519 || sui;
+      const { Ed25519Keypair } = require('@mysten/sui/keypairs/ed25519');
 
       if (this._privateKey.startsWith('suiprivkey')) {
         this._keypair = Ed25519Keypair.fromSecretKey(this._privateKey);

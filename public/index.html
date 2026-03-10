@@ -99,8 +99,9 @@
         <nav>
           <a href="#how-it-works">How it works</a>
           <a href="#chains">Chains</a>
+          <a href="#hosted">Pricing</a>
+          <a href="/dashboard" style="color:#a78bfa;font-weight:600;">Dashboard</a>
           <a href="https://github.com/alekblom/provifier" target="_blank" rel="noopener">GitHub</a>
-          <a href="https://www.npmjs.com/package/@provifier/sdk" target="_blank" rel="noopener">npm</a>
         </nav>
       </div>
       <p class="tagline">Trustless off-chain data integrity with on-chain hash commitments.</p>
@@ -356,6 +357,41 @@ sui client publish --gas-budget 100000000</code></pre>
             </tr>
           </tbody>
         </table>
+      </div>
+    </section>
+
+    <section id="hosted">
+      <h3>Hosted API</h3>
+      <p style="color:#aaa;max-width:700px;margin-bottom:16px;">Don't want to manage keys and chain connections? Use the hosted API at <strong style="color:#fff;">provifier.com</strong>. Same SDK — just point it at our endpoint instead of running your own.</p>
+      <div class="chain-grid">
+        <div class="chain-card">
+          <strong>Self-hosted</strong>
+          <p>Deploy your own instance</p>
+          <p>Your keys, your chain costs</p>
+          <p>Unlimited commits</p>
+          <p style="color:#a78bfa;font-weight:600;margin-top:8px;">Free forever (MIT)</p>
+        </div>
+        <div class="chain-card" style="border-color:rgba(124,58,237,0.4);">
+          <strong>provifier.com</strong>
+          <p>No setup — just get an API key</p>
+          <p>We handle chain transactions</p>
+          <p>1 credit per commit ($0.01)</p>
+          <p>Verify: always free</p>
+          <p style="color:#a78bfa;font-weight:600;margin-top:8px;">Pay-as-you-go</p>
+          <span class="badge">25 free credits/week</span>
+        </div>
+      </div>
+      <pre style="margin-top:16px;"><code># Hosted API — no SDK needed, just curl
+curl -X POST https://provifier.com/v1/commit \
+  -H "X-Provifier-Key: pvf_live_..." \
+  -H "Content-Type: application/json" \
+  -d '{"table":"docs","rowId":"doc-7","data":"Hello world"}'
+
+# Verify (free, no auth)
+curl https://provifier.com/v1/verify/SuiTxDigest...</code></pre>
+      <div class="cta-row" style="margin-top:16px;">
+        <a href="/dashboard" class="btn btn-primary">Get API key</a>
+        <a href="https://alexiuz.com/credits" class="btn btn-secondary" target="_blank" rel="noopener">Buy credits</a>
       </div>
     </section>
 

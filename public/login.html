@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — Provifier</title>
+  <link rel="icon" type="image/svg+xml" href="/logo.svg">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0a; color: #e0e0e0; line-height: 1.6;
+      display: flex; align-items: center; justify-content: center; min-height: 100vh;
+    }
+    .card {
+      background: #141414; border: 1px solid #222; border-radius: 12px;
+      padding: 40px; max-width: 400px; width: 100%; text-align: center;
+    }
+    .card img { margin-bottom: 16px; }
+    .card h1 { font-size: 1.4rem; color: #fff; margin-bottom: 8px; }
+    .card p { color: #888; font-size: 0.9rem; margin-bottom: 24px; }
+    .btn {
+      display: inline-block; padding: 14px 32px; border-radius: 8px;
+      font-weight: 600; font-size: 0.95rem; text-decoration: none; cursor: pointer;
+      background: #7c3aed; color: #fff; border: none; width: 100%;
+    }
+    .btn:hover { background: #6d28d9; }
+    .error-msg { color: #f44336; font-size: 0.85rem; margin-bottom: 16px; }
+    .back { color: #888; text-decoration: none; font-size: 0.85rem; display: block; margin-top: 20px; }
+    .back:hover { color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <img src="/logo.svg" alt="Provifier" width="48" height="48">
+    <h1>Sign in to Provifier</h1>
+    <p>Use your Alexiuz account to access the dashboard and manage API keys.</p>
+    <div id="error" class="error-msg" style="display:none;"></div>
+    <a class="btn" href="https://alexiuz.com/login?return_to=https://provifier.com/auth/sso/callback">Sign in with Alexiuz</a>
+    <a class="back" href="/">Back to home</a>
+  </div>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('error')) {
+      const el = document.getElementById('error');
+      el.style.display = 'block';
+      el.textContent = params.get('error') === 'invalid-token' ? 'Login failed. Please try again.' : 'An error occurred.';
+    }
+  </script>
+</body>
+</html>

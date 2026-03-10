@@ -6,7 +6,15 @@
   "scripts": {
     "test": "node --test test/sdk.test.js"
   },
-  "keywords": ["provifier", "integrity", "merkle", "sui", "solana", "hash", "commitment"],
+  "keywords": [
+    "provifier",
+    "integrity",
+    "merkle",
+    "sui",
+    "solana",
+    "hash",
+    "commitment"
+  ],
   "author": "Alexiuz AS",
   "license": "MIT",
   "repository": {
@@ -18,11 +26,15 @@
     "node": ">=18.0.0"
   },
   "peerDependencies": {
-    "@mysten/sui": ">=1.0.0",
-    "@solana/web3.js": ">=1.90.0"
+    "@mysten/sui": "^1.45.2",
+    "@solana/web3.js": "^1.98.4"
   },
   "peerDependenciesMeta": {
-    "@mysten/sui": { "optional": true },
-    "@solana/web3.js": { "optional": true }
+    "@mysten/sui": {
+      "optional": true
+    },
+    "@solana/web3.js": {
+      "optional": true
+    }
   }
 }

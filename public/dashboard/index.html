@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Provifier</title>
+  <link rel="icon" type="image/svg+xml" href="/logo.svg">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0a; color: #e0e0e0; line-height: 1.6;
+    }
+    .container { max-width: 800px; margin: 0 auto; padding: 0 20px; }
+    header { border-bottom: 1px solid #222; padding: 16px 0; }
+    header .inner { display: flex; align-items: center; justify-content: space-between; }
+    header h1 { font-size: 1.2rem; color: #fff; }
+    header h1 a { color: #fff; text-decoration: none; }
+    header h1 img { vertical-align: middle; margin-right: 6px; }
+    nav { display: flex; gap: 16px; align-items: center; }
+    nav a { color: #888; text-decoration: none; font-size: 0.85rem; }
+    nav a:hover { color: #fff; }
+    nav a.active { color: #a78bfa; }
+    #logout-btn { cursor: pointer; background: none; border: none; color: #888; font-size: 0.85rem; }
+    #logout-btn:hover { color: #fff; }
+    main { padding: 32px 0; }
+    h2 { font-size: 1.2rem; color: #fff; margin-bottom: 16px; }
+    h3 { font-size: 1rem; color: #fff; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+    .cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+    .card { background: #141414; border: 1px solid #222; border-radius: 8px; padding: 16px; }
+    .card-label { color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .card-value { color: #fff; font-size: 1.4rem; font-weight: 700; margin-top: 4px; }
+    .card-value.purple { color: #a78bfa; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th { text-align: left; padding: 8px; color: #888; border-bottom: 1px solid #222; font-weight: 600; }
+    td { padding: 8px; border-bottom: 1px solid #1a1a1a; color: #ccc; }
+    td a { color: #a78bfa; text-decoration: none; }
+    td a:hover { text-decoration: underline; }
+    .mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.8rem; }
+    .key-actions { display: flex; gap: 8px; margin-top: 16px; }
+    .btn { padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 0.85rem; cursor: pointer; border: none; }
+    .btn-primary { background: #7c3aed; color: #fff; }
+    .btn-primary:hover { background: #6d28d9; }
+    .btn-danger { background: transparent; color: #f44336; border: 1px solid #f44336; }
+    .btn-danger:hover { background: rgba(244,67,54,0.1); }
+    .key-display { background: #0a0a0a; border: 1px solid #333; border-radius: 6px; padding: 12px; margin: 12px 0; word-break: break-all; }
+    .section { margin-bottom: 32px; }
+    .empty { color: #555; font-size: 0.9rem; padding: 20px; text-align: center; }
+    .credit-link { color: #a78bfa; text-decoration: none; font-size: 0.85rem; }
+    .credit-link:hover { text-decoration: underline; }
+    #tab-overview, #tab-keys, #tab-commits { display: none; }
+    #tab-overview.active, #tab-keys.active, #tab-commits.active { display: block; }
+    @media (max-width: 600px) { .cards { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container inner">
+      <h1><a href="/"><img src="/logo.svg" alt="" width="24" height="24">Provifier</a></h1>
+      <nav>
+        <a href="#overview" class="tab-link active" data-tab="overview">Overview</a>
+        <a href="#keys" class="tab-link" data-tab="keys">API Keys</a>
+        <a href="#commits" class="tab-link" data-tab="commits">Commits</a>
+        <button id="logout-btn">Sign out</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Overview -->
+    <div id="tab-overview" class="active">
+      <h2>Overview</h2>
+      <div class="cards">
+        <div class="card">
+          <div class="card-label">Credits</div>
+          <div class="card-value purple" id="credit-balance">--</div>
+          <a href="https://alexiuz.com/credits" class="credit-link" target="_blank" rel="noopener">Buy credits</a>
+        </div>
+        <div class="card">
+          <div class="card-label">Total Commits</div>
+          <div class="card-value" id="total-commits">--</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Active Keys</div>
+          <div class="card-value" id="active-keys">--</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Recent commits</h3>
+        <table id="recent-table">
+          <thead><tr><th>Type</th><th>Table</th><th>Tx</th><th>Date</th></tr></thead>
+          <tbody id="recent-body"></tbody>
+        </table>
+        <div id="recent-empty" class="empty" style="display:none;">No commits yet. Create an API key and start committing.</div>
+      </div>
+    </div>
+
+    <!-- API Keys -->
+    <div id="tab-keys">
+      <h2>API Keys</h2>
+      <div id="new-key-display" class="key-display" style="display:none;">
+        <strong style="color:#4caf50;">New key created — copy it now (shown once):</strong>
+        <div class="mono" id="new-key-value" style="margin-top:8px;color:#fff;"></div>
+      </div>
+      <div class="key-actions">
+        <button class="btn btn-primary" id="create-key-btn">Create new key</button>
+      </div>
+      <table id="keys-table" style="margin-top:16px;">
+        <thead><tr><th>Name</th><th>Prefix</th><th>Created</th><th>Last used</th><th></th></tr></thead>
+        <tbody id="keys-body"></tbody>
+      </table>
+    </div>
+
+    <!-- Commits -->
+    <div id="tab-commits">
+      <h2>Commit History</h2>
+      <table id="commits-table">
+        <thead><tr><th>Type</th><th>Table</th><th>Hash/Root</th><th>Chain</th><th>Tx</th><th>Date</th></tr></thead>
+        <tbody id="commits-body"></tbody>
+      </table>
+      <div id="commits-empty" class="empty" style="display:none;">No commits yet.</div>
+      <div style="margin-top:12px;text-align:center;">
+        <button class="btn btn-primary" id="load-more-btn" style="display:none;">Load more</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let currentPage = 1;
+
+    async function fetchAPI(path, opts = {}) {
+      const res = await fetch(path, { credentials: 'same-origin', ...opts });
+      if (res.status === 401) { window.location.href = '/login'; return null; }
+      return res.json();
+    }
+
+    function shortDate(iso) {
+      if (!iso) return '--';
+      return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+
+    function shortHash(h) {
+      return h ? h.substring(0, 12) + '...' : '--';
+    }
+
+    // Tabs
+    document.querySelectorAll('.tab-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+        document.querySelectorAll('#tab-overview, #tab-keys, #tab-commits').forEach(t => t.classList.remove('active'));
+        document.getElementById('tab-' + link.dataset.tab).classList.add('active');
+        if (link.dataset.tab === 'keys') loadKeys();
+        if (link.dataset.tab === 'commits') { currentPage = 1; loadCommits(); }
+      });
+    });
+
+    // Overview
+    async function loadOverview() {
+      const data = await fetchAPI('/api/dashboard/stats');
+      if (!data) return;
+
+      document.getElementById('credit-balance').textContent =
+        data.credits ? '$' + (data.credits.total / 100).toFixed(2) : 'N/A';
+      document.getElementById('total-commits').textContent = data.stats?.total || 0;
+      document.getElementById('active-keys').textContent = data.activeKeys || 0;
+
+      const tbody = document.getElementById('recent-body');
+      tbody.innerHTML = '';
+      if (!data.recentCommits || data.recentCommits.length === 0) {
+        document.getElementById('recent-empty').style.display = 'block';
+      } else {
+        data.recentCommits.forEach(c => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${c.type}</td><td>${c.table || '--'}</td>
+            <td class="mono"><a href="${c.explorerUrl}" target="_blank" rel="noopener">${shortHash(c.txDigest)}</a></td>
+            <td>${shortDate(c.createdAt)}</td>`;
+          tbody.appendChild(tr);
+        });
+      }
+    }
+
+    // Keys
+    async function loadKeys() {
+      const data = await fetchAPI('/api/dashboard/keys');
+      if (!data) return;
+      const tbody = document.getElementById('keys-body');
+      tbody.innerHTML = '';
+      data.keys.forEach(k => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${k.name}</td><td class="mono">${k.prefix}...</td>
+          <td>${shortDate(k.createdAt)}</td><td>${shortDate(k.lastUsedAt)}</td>
+          <td>${k.revoked ? '<span style="color:#888">Revoked</span>' :
+            '<button class="btn btn-danger" onclick="revokeKey(\'' + k.id + '\')">Revoke</button>'}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById('create-key-btn').addEventListener('click', async () => {
+      const data = await fetchAPI('/api/dashboard/keys', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+      if (!data || data.error) { alert(data?.error?.message || 'Failed'); return; }
+      document.getElementById('new-key-value').textContent = data.key;
+      document.getElementById('new-key-display').style.display = 'block';
+      loadKeys();
+    });
+
+    async function revokeKey(id) {
+      if (!confirm('Revoke this key?')) return;
+      await fetchAPI('/api/dashboard/keys/' + id, { method: 'DELETE' });
+      loadKeys();
+    }
+
+    // Commits
+    async function loadCommits() {
+      const data = await fetchAPI('/api/dashboard/commits?page=' + currentPage);
+      if (!data) return;
+      const tbody = document.getElementById('commits-body');
+      if (currentPage === 1) tbody.innerHTML = '';
+      if (data.commits.length === 0 && currentPage === 1) {
+        document.getElementById('commits-empty').style.display = 'block';
+      } else {
+        document.getElementById('commits-empty').style.display = 'none';
+        data.commits.forEach(c => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${c.type}</td><td>${c.table || '--'}</td>
+            <td class="mono">${shortHash(c.dataHash || c.merkleRoot)}</td>
+            <td>${c.chain}</td>
+            <td class="mono"><a href="${c.explorerUrl}" target="_blank" rel="noopener">${shortHash(c.txDigest)}</a></td>
+            <td>${shortDate(c.createdAt)}</td>`;
+          tbody.appendChild(tr);
+        });
+        document.getElementById('load-more-btn').style.display =
+          (currentPage * data.perPage < data.total) ? 'inline-block' : 'none';
+      }
+    }
+
+    document.getElementById('load-more-btn').addEventListener('click', () => { currentPage++; loadCommits(); });
+
+    // Logout
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      await fetchAPI('/auth/logout', { method: 'POST' });
+      window.location.href = '/login';
+    });
+
+    loadOverview();
+  </script>
+</body>
+</html>
