@@ -1,0 +1,28 @@
+{
+  "name": "@provifier/sdk",
+  "version": "0.1.0",
+  "description": "Trustless off-chain data integrity with on-chain hash commitments — Sui + Solana",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --test test/sdk.test.js"
+  },
+  "keywords": ["provifier", "integrity", "merkle", "sui", "solana", "hash", "commitment"],
+  "author": "Alexiuz AS",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alexiuz/provifier",
+    "directory": "packages/sdk"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "peerDependencies": {
+    "@mysten/sui": ">=1.0.0",
+    "@solana/web3.js": ">=1.90.0"
+  },
+  "peerDependenciesMeta": {
+    "@mysten/sui": { "optional": true },
+    "@solana/web3.js": { "optional": true }
+  }
+}
