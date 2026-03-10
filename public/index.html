@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Provifier — Trustless Off-Chain Data Integrity</title>
+  <meta name="description" content="Hash your data, commit it on-chain, verify it later. No middleman — the blockchain is the referee.">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0a;
+      color: #e0e0e0;
+      line-height: 1.6;
+    }
+    .container { max-width: 800px; margin: 0 auto; padding: 0 20px; }
+    header { border-bottom: 1px solid #222; padding: 24px 0; margin-bottom: 48px; }
+    header h1 { font-size: 1.5rem; color: #fff; font-weight: 700; letter-spacing: -0.02em; }
+    .tagline { color: #888; margin-top: 4px; }
+    nav { display: flex; gap: 16px; align-items: center; }
+    nav a { color: #888; text-decoration: none; font-size: 0.85rem; }
+    nav a:hover { color: #fff; }
+    main { padding: 40px 0; }
+    section { margin-bottom: 48px; }
+    h2 { font-size: 1.4rem; color: #fff; margin-bottom: 12px; }
+    h3 { font-size: 1.1rem; color: #fff; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+    .hero p { color: #aaa; font-size: 1.05rem; max-width: 700px; }
+    .steps { display: grid; gap: 16px; }
+    .step { background: #141414; border: 1px solid #222; border-radius: 8px; padding: 20px; }
+    .step-num {
+      display: inline-block; width: 24px; height: 24px;
+      background: #7c3aed; color: #fff; border-radius: 50%;
+      text-align: center; font-size: 0.8rem; line-height: 24px;
+      font-weight: 700; margin-bottom: 8px;
+    }
+    .step strong { display: block; color: #fff; margin-bottom: 4px; }
+    .step p { color: #888; font-size: 0.9rem; }
+    pre {
+      background: #141414; border: 1px solid #222; border-radius: 8px;
+      padding: 20px; overflow-x: auto;
+    }
+    code {
+      font-family: 'SF Mono', 'Fira Code', 'Fira Mono', monospace;
+      font-size: 0.85rem; color: #a78bfa;
+    }
+    .chain-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 700px; }
+    .chain-card {
+      padding: 20px; background: #141414; border-radius: 8px;
+      border: 1px solid #222;
+    }
+    .chain-card strong { color: #fff; font-size: 0.95rem; display: block; margin-bottom: 8px; }
+    .chain-card p { color: #888; font-size: 0.85rem; margin: 4px 0; }
+    .badge {
+      display: inline-block; background: rgba(124,58,237,0.1);
+      border: 1px solid rgba(124,58,237,0.3); border-radius: 4px;
+      padding: 2px 8px; font-size: 0.75rem; color: #a78bfa; margin-top: 8px;
+    }
+    .cta-row { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+    .btn {
+      display: inline-block; padding: 12px 24px; border-radius: 6px;
+      font-weight: 600; font-size: 0.9rem; text-decoration: none; cursor: pointer;
+    }
+    .btn-primary { background: #7c3aed; color: #fff; border: none; }
+    .btn-primary:hover { background: #6d28d9; }
+    .btn-secondary { background: transparent; color: #a78bfa; border: 1px solid #7c3aed; }
+    .btn-secondary:hover { background: rgba(124,58,237,0.1); }
+    .features { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; max-width: 700px; }
+    .feature {
+      padding: 16px; background: #141414; border-radius: 8px;
+      border: 1px solid #222; text-align: center;
+    }
+    .feature strong { color: #fff; font-size: 0.85rem; display: block; margin-bottom: 4px; }
+    .feature p { color: #888; font-size: 0.75rem; }
+    .use-cases { display: grid; gap: 12px; }
+    .use-case {
+      padding: 16px 20px; background: #141414; border: 1px solid #222;
+      border-radius: 8px; display: flex; gap: 16px; align-items: flex-start;
+    }
+    .use-case-icon {
+      width: 36px; height: 36px; background: rgba(124,58,237,0.15);
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 1.1rem;
+    }
+    .use-case strong { color: #fff; display: block; margin-bottom: 2px; font-size: 0.9rem; }
+    .use-case p { color: #888; font-size: 0.85rem; }
+    footer { border-top: 1px solid #222; padding: 24px 0; text-align: center; color: #555; font-size: 0.85rem; }
+    footer a { color: #888; }
+    @media (max-width: 600px) {
+      .chain-grid, .features { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <h1>Provifier</h1>
+        <nav>
+          <a href="#how-it-works">How it works</a>
+          <a href="#chains">Chains</a>
+          <a href="https://github.com/alekblom/provifier" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://www.npmjs.com/package/@provifier/sdk" target="_blank" rel="noopener">npm</a>
+        </nav>
+      </div>
+      <p class="tagline">Trustless off-chain data integrity with on-chain hash commitments.</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h2>Prove your data hasn't changed. No middleman.</h2>
+      <p>Provifier lets any application hash its data and commit that hash on-chain. Verification is trustless: re-hash locally, compare to the blockchain. No data goes on-chain — only 64-character SHA-256 hashes.</p>
+      <div class="cta-row">
+        <a href="https://www.npmjs.com/package/@provifier/sdk" class="btn btn-primary" target="_blank" rel="noopener">npm install @provifier/sdk</a>
+        <a href="https://github.com/alekblom/provifier" class="btn btn-secondary" target="_blank" rel="noopener">View source</a>
+      </div>
+    </section>
+
+    <section id="how-it-works">
+      <h3>How it works</h3>
+      <div class="steps">
+        <div class="step">
+          <span class="step-num">1</span>
+          <strong>Hash your data</strong>
+          <p>Your app calls <code>Provifier.hashRecord(table, rowId, data)</code>. Domain-separated SHA-256 ensures hashes are unique per table and row — no cross-protocol collisions.</p>
+        </div>
+        <div class="step">
+          <span class="step-num">2</span>
+          <strong>Commit hash on-chain</strong>
+          <p>The hash is signed and submitted to Sui (Move contract event) or Solana (SPL Memo). Server-side with a private key, or client-side via the user's wallet — your choice.</p>
+        </div>
+        <div class="step">
+          <span class="step-num">3</span>
+          <strong>Verify anytime</strong>
+          <p>Re-hash the data, fetch the on-chain event, compare. If they match, the data is authentic and hasn't been tampered with since commitment. Fully trustless — the blockchain is the referee.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h3>Key features</h3>
+      <div class="features">
+        <div class="feature">
+          <strong>Multi-chain</strong>
+          <p>Sui + Solana from day one</p>
+        </div>
+        <div class="feature">
+          <strong>Merkle batching</strong>
+          <p>Commit thousands of records in one transaction</p>
+        </div>
+        <div class="feature">
+          <strong>Client-side signing</strong>
+          <p>Users commit from their own wallet (Sui)</p>
+        </div>
+        <div class="feature">
+          <strong>Domain separation</strong>
+          <p>Hashes scoped by table + row ID</p>
+        </div>
+        <div class="feature">
+          <strong>Zero on-chain data</strong>
+          <p>Only 64-char hashes, never your data</p>
+        </div>
+        <div class="feature">
+          <strong>MIT licensed</strong>
+          <p>Free, open source, no lock-in</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h3>Quick start</h3>
+      <pre><code>npm install @provifier/sdk</code></pre>
+      <pre style="margin-top:12px;"><code>const { Provifier } = require('@provifier/sdk');
+
+const p = new Provifier({
+  chain: 'sui',
+  network: 'testnet',
+  privateKey: process.env.SUI_PRIVATE_KEY,
+  packageId: '0x...',   // deployed Move contract
+});
+
+// Commit a record
+const receipt = await p.commit({
+  table: 'documents',
+  rowId: 'doc-7',
+  data: documentContent,
+});
+console.log(receipt.txDigest);    // Sui transaction digest
+console.log(receipt.explorerUrl); // https://suiscan.xyz/testnet/tx/...
+
+// Verify later — trustless
+const result = await p.verify({
+  table: 'documents',
+  rowId: 'doc-7',
+  data: documentContent,
+  txDigest: receipt.txDigest,
+});
+console.log(result.valid); // true</code></pre>
+    </section>
+
+    <section>
+      <h3>Batch commits (Merkle tree)</h3>
+      <p style="color:#aaa;max-width:700px;margin-bottom:16px;">Commit many records in a single transaction. Each entry gets a Merkle proof for individual verification.</p>
+      <pre><code>const batch = await p.commitBatch({
+  entries: [
+    { table: 'users', rowId: '1', data: JSON.stringify(user1) },
+    { table: 'users', rowId: '2', data: JSON.stringify(user2) },
+    { table: 'users', rowId: '3', data: JSON.stringify(user3) },
+  ],
+});
+
+// Verify one entry from the batch
+const result = await p.verify({
+  table: 'users',
+  rowId: '2',
+  data: JSON.stringify(user2),
+  merkleProof: batch.receipts[1].merkleProof,
+  merkleRoot: batch.receipts[1].merkleRoot,
+  txDigest: batch.txDigest,
+});
+console.log(result.valid); // true</code></pre>
+    </section>
+
+    <section>
+      <h3>Client-side wallet signing</h3>
+      <p style="color:#aaa;max-width:700px;margin-bottom:16px;">For dApps where the user commits from their own wallet — maximum trust, zero server dependency.</p>
+      <pre><code>const p = new Provifier({
+  chain: 'sui',
+  network: 'mainnet',
+  packageId: '0x...',
+  // No privateKey — client-side mode
+});
+
+const { transaction, hash } = p.buildCommitTx({
+  table: 'documents',
+  rowId: 'doc-7',
+  data: documentContent,
+});
+
+// Pass to user's wallet (Sui Wallet, Suiet, zkLogin)
+const result = await wallet.signAndExecuteTransaction({
+  transaction,
+});</code></pre>
+    </section>
+
+    <section id="chains">
+      <h3>Multi-chain</h3>
+      <div class="chain-grid">
+        <div class="chain-card">
+          <strong>Sui</strong>
+          <p>Move contract with typed events</p>
+          <p>Structured event queries</p>
+          <p>Client-side wallet signing</p>
+          <p>~$0.001 per commit</p>
+          <span class="badge">Recommended</span>
+        </div>
+        <div class="chain-card">
+          <strong>Solana</strong>
+          <p>SPL Memo program — no deploy needed</p>
+          <p>Parse from transaction logs</p>
+          <p>Lowest possible cost</p>
+          <p>~$0.0005 per commit</p>
+          <span class="badge">Zero setup</span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h3>Use cases</h3>
+      <div class="use-cases">
+        <div class="use-case">
+          <div class="use-case-icon">&#x1f4be;</div>
+          <div>
+            <strong>dApps with off-chain data</strong>
+            <p>Games, social platforms, marketplaces — commit off-chain state hashes so users can verify their data hasn't been silently altered.</p>
+          </div>
+        </div>
+        <div class="use-case">
+          <div class="use-case-icon">&#x1f4dc;</div>
+          <div>
+            <strong>Compliance and audit trails</strong>
+            <p>Financial records, healthcare data, legal documents — prove what existed when, with cryptographic certainty anchored to the blockchain.</p>
+          </div>
+        </div>
+        <div class="use-case">
+          <div class="use-case-icon">&#x1f512;</div>
+          <div>
+            <strong>Supply chain integrity</strong>
+            <p>Hash shipment records, certificates, or sensor data at each checkpoint. Any tampering breaks the chain of proof.</p>
+          </div>
+        </div>
+        <div class="use-case">
+          <div class="use-case-icon">&#x2699;</div>
+          <div>
+            <strong>Configuration drift detection</strong>
+            <p>Commit config file hashes on deploy. Later, re-hash and compare to detect unauthorized changes.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h3>Sui Move contract</h3>
+      <p style="color:#aaa;max-width:700px;margin-bottom:16px;">Deploy once, use forever. The contract emits events — no stored objects, cheapest possible on-chain operation.</p>
+      <pre><code>// Two event types:
+// HashCommitted  — single record: committer, table, row_id, data_hash, timestamp
+// BatchCommitted — Merkle batch: committer, merkle_root, leaf_count, timestamp
+
+cd contracts/sui
+sui move build
+sui client publish --gas-budget 100000000</code></pre>
+    </section>
+
+    <section>
+      <h3>API reference</h3>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+          <thead>
+            <tr style="border-bottom:1px solid #333;">
+              <th style="text-align:left;padding:10px;color:#888;">Method</th>
+              <th style="text-align:left;padding:10px;color:#888;">Returns</th>
+              <th style="text-align:left;padding:10px;color:#888;">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #1a1a1a;">
+              <td style="padding:10px;"><code>Provifier.hash(data)</code></td>
+              <td style="padding:10px;color:#aaa;">string</td>
+              <td style="padding:10px;color:#aaa;">SHA-256 with <code>provifier:v1:</code> domain prefix</td>
+            </tr>
+            <tr style="border-bottom:1px solid #1a1a1a;">
+              <td style="padding:10px;"><code>Provifier.hashRecord(table, rowId, data)</code></td>
+              <td style="padding:10px;color:#aaa;">string</td>
+              <td style="padding:10px;color:#aaa;">Domain-separated hash per table/row</td>
+            </tr>
+            <tr style="border-bottom:1px solid #1a1a1a;">
+              <td style="padding:10px;"><code>commit({ table, rowId, data })</code></td>
+              <td style="padding:10px;color:#aaa;">Promise&lt;Receipt&gt;</td>
+              <td style="padding:10px;color:#aaa;">Commit a single hash on-chain</td>
+            </tr>
+            <tr style="border-bottom:1px solid #1a1a1a;">
+              <td style="padding:10px;"><code>commitBatch({ entries })</code></td>
+              <td style="padding:10px;color:#aaa;">Promise&lt;BatchResult&gt;</td>
+              <td style="padding:10px;color:#aaa;">Merkle batch commit</td>
+            </tr>
+            <tr style="border-bottom:1px solid #1a1a1a;">
+              <td style="padding:10px;"><code>verify({ ... })</code></td>
+              <td style="padding:10px;color:#aaa;">Promise&lt;VerifyResult&gt;</td>
+              <td style="padding:10px;color:#aaa;">Re-hash + on-chain comparison</td>
+            </tr>
+            <tr>
+              <td style="padding:10px;"><code>buildCommitTx({ ... })</code></td>
+              <td style="padding:10px;color:#aaa;">{ transaction, hash }</td>
+              <td style="padding:10px;color:#aaa;">Unsigned Sui tx for wallet signing</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h3>Testing</h3>
+      <pre><code>cd packages/sdk
+node --test test/sdk.test.js
+# 25 tests — hashing, Merkle trees, commit/verify, tamper detection
+# Uses mock chain adapters — no network access needed</code></pre>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>Provifier by <a href="https://alexiuz.com">Alexiuz AS</a> &middot; <a href="https://github.com/alekblom/provifier" target="_blank" rel="noopener">Open Source (MIT)</a></p>
+    </div>
+  </footer>
+</body>
+</html>
