@@ -1,6 +1,6 @@
 /**
  * @provifier/sdk — Trustless off-chain data integrity with on-chain hash commitments.
- * Multi-chain: Sui (Move contract events) + Solana (SPL Memo).
+ * Multi-chain: Sui (Move contract events) + Solana (SPL Memo) + EVM (input data memo).
  */
 
 const { sha256, hash, hashRecord } = require('./lib/hash');
@@ -10,11 +10,11 @@ const { verifySingle, verifyBatch } = require('./lib/verify');
 class Provifier {
   /**
    * @param {object} opts
-   * @param {'sui'|'solana'} [opts.chain='sui']
+   * @param {'sui'|'solana'|'ethereum'|'polygon'|'base'} [opts.chain='sui']
    * @param {string} [opts.network='testnet']
-   * @param {string} [opts.privateKey] - Hex, bech32 (Sui), or JSON array (Solana). Omit for client-side.
+   * @param {string} [opts.privateKey] - Hex, bech32 (Sui), JSON array (Solana), or 0x-prefixed (EVM). Omit for client-side.
    * @param {string} [opts.packageId] - Sui Move package ID (required for Sui).
-   * @param {string} [opts.rpcUrl] - Solana RPC URL.
+   * @param {string} [opts.rpcUrl] - Solana or EVM RPC URL.
    * @param {object} [opts.adapter] - Custom chain adapter (for testing).
    */
   constructor(opts = {}) {
@@ -27,6 +27,13 @@ class Provifier {
       this._adapter = new SolanaAdapter({
         rpcUrl: opts.rpcUrl,
         privateKey: opts.privateKey,
+      });
+    } else if (['ethereum', 'polygon', 'base', 'evm'].includes(this._chain)) {
+      const { EvmAdapter } = require('./lib/chains/evm');
+      this._adapter = new EvmAdapter({
+        rpcUrl: opts.rpcUrl,
+        privateKey: opts.privateKey,
+        chainName: this._chain === 'evm' ? 'ethereum' : this._chain,
       });
     } else {
       const { SuiAdapter } = require('./lib/chains/sui');

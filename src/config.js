@@ -16,6 +16,18 @@ module.exports = {
     rpcUrl: process.env.SOLANA_RPC_URL || null,
     keypairSecret: process.env.SOLANA_KEYPAIR_SECRET || null,
   },
+  ethereum: {
+    rpcUrl: process.env.ETHEREUM_RPC_URL || null,
+    privateKey: process.env.ETHEREUM_PRIVATE_KEY || null,
+  },
+  polygon: {
+    rpcUrl: process.env.POLYGON_RPC_URL || null,
+    privateKey: process.env.POLYGON_PRIVATE_KEY || null,
+  },
+  base: {
+    rpcUrl: process.env.BASE_RPC_URL || null,
+    privateKey: process.env.BASE_PRIVATE_KEY || null,
+  },
   alexiuzServiceKey: process.env.ALEXIUZ_SERVICE_KEY || null,
   alexiuzDb: {
     host: process.env.ALEXIUZ_DB_HOST || 'localhost',

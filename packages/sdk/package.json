@@ -1,7 +1,7 @@
 {
   "name": "@provifier/sdk",
   "version": "0.1.0",
-  "description": "Trustless off-chain data integrity with on-chain hash commitments — Sui + Solana",
+  "description": "Trustless off-chain data integrity with on-chain hash commitments — Sui + Solana + EVM",
   "main": "index.js",
   "scripts": {
     "test": "node --test test/sdk.test.js"
@@ -12,6 +12,8 @@
     "merkle",
     "sui",
     "solana",
+    "ethereum",
+    "evm",
     "hash",
     "commitment"
   ],
@@ -27,13 +29,17 @@
   },
   "peerDependencies": {
     "@mysten/sui": "^1.45.2",
-    "@solana/web3.js": "^1.98.4"
+    "@solana/web3.js": "^1.98.4",
+    "ethers": "^6.13.0"
   },
   "peerDependenciesMeta": {
     "@mysten/sui": {
       "optional": true
     },
     "@solana/web3.js": {
+      "optional": true
+    },
+    "ethers": {
       "optional": true
     }
   }

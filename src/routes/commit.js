@@ -22,6 +22,9 @@ function getProvifier(chain) {
   } else if (c === 'solana' || c === 'sol') {
     opts.rpcUrl = config.solana.rpcUrl;
     opts.privateKey = config.solana.keypairSecret;
+  } else if (['ethereum', 'polygon', 'base'].includes(c)) {
+    opts.rpcUrl = config[c].rpcUrl;
+    opts.privateKey = config[c].privateKey;
   }
 
   instances[c] = new Provifier(opts);

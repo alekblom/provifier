@@ -45,6 +45,8 @@ router.get('/verify/:txDigest', async (req, res) => {
     if (chain === 'sui') {
       opts.network = config.sui.network;
       opts.packageId = config.sui.packageId;
+    } else if (['ethereum', 'polygon', 'base'].includes(chain)) {
+      opts.rpcUrl = config[chain].rpcUrl;
     } else {
       opts.rpcUrl = config.solana.rpcUrl;
     }
