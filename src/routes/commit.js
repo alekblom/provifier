@@ -23,6 +23,9 @@ function getProvifier(chain) {
     opts.rpcUrl = config.solana.rpcUrl;
     opts.privateKey = config.solana.keypairSecret;
   } else if (['ethereum', 'polygon', 'base'].includes(c)) {
+    if (!config[c].rpcUrl || !config[c].privateKey) {
+      throw new Error(`${c} is not available on the hosted API. Use the SDK to self-host.`);
+    }
     opts.rpcUrl = config[c].rpcUrl;
     opts.privateKey = config[c].privateKey;
   }
